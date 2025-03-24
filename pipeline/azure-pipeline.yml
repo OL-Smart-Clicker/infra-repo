@@ -6,6 +6,7 @@ trigger:
   paths:
     include:
       - terraform/*
+      - config/*
 
 pr: none # Do not run on PR
 
