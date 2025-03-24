@@ -54,21 +54,18 @@ stages:
 
     # Publish the tfplan artifact for later use in Apply
     - publish: $(System.DefaultWorkingDirectory)/terraform/tfplan
-      artifact: tfplan
+      artifact: tfplan-artif
 
 - stage: Approve
   dependsOn: Plan
   jobs:
-  - deployment: Manual_Approval
-    environment: Staging 
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - task: ManualIntervention@8
-            inputs:
-              instructions: 'Please review the changes and approve the deployment to Staging.'
-              onTimeout: 'reject'
+  - job: Manual_Approval
+    pool: server
+    steps:
+    - task: ManualValidation@0
+      inputs:
+        instructions: 'Please review the Terraform plan and approve if the changes are acceptable.'
+        onTimeout: 'reject'
 
 - stage: Apply
   dependsOn: Approve
@@ -76,11 +73,19 @@ stages:
   - job: Execute_TFApply
     steps:
     - download: current
-      artifact: tfplan
-      path: $(System.DefaultWorkingDirectory)/terraform
+      artifact: tfplan-artif
+    - task: TerraformInstaller@1
+      displayName: 'Install Terraform 1.11.2'
+      inputs:
+        terraformVersion: 1.11.2
+    - task: TerraformCLI@1
+      inputs:
+        command: init
+        workingDirectory: 'terraform'
+        environmentServiceName: 'tf-pipeline-sc-staging'
     - task: TerraformCLI@1
       inputs:
         command: apply
-        commandOptions: '$(System.DefaultWorkingDirectory)/terraform/tfplan'  # vars embedded in tfplan
+        commandOptions: '$(Pipeline.Workspace)/tfplan-artif/tfplan'  # vars embedded in tfplan
         workingDirectory: 'terraform'
         environmentServiceName: 'tf-pipeline-sc-staging'
