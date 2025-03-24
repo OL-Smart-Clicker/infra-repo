@@ -32,20 +32,20 @@ jobs:
       run: tflint -f compact
     
     # Trivy Security Scan
-    # - uses: aquasecurity/trivy-action@0.30.0
-    #   with:
-    #     scan-type: 'config'
-    #     scan-ref: './'
-    #     severity: 'CRITICAL,HIGH'
+    - uses: aquasecurity/trivy-action@0.30.0
+      with:
+        scan-type: 'config'
+        scan-ref: './'
+        severity: 'CRITICAL,HIGH'
     
     # Branch protection requirement
-    - uses: actions/github-script@v6
-      if: github.event_name == 'pull_request'
-      with:
-        script: |
-          github.rest.pulls.updateBranch({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            pull_number: context.payload.pull_request.number,
-            expected_head_sha: context.sha
-          })
+    # - uses: actions/github-script@v6
+    #   if: github.event_name == 'pull_request'
+    #   with:
+    #     script: |
+    #       github.rest.pulls.updateBranch({
+    #         owner: context.repo.owner,
+    #         repo: context.repo.repo,
+    #         pull_number: context.payload.pull_request.number,
+    #         expected_head_sha: context.sha
+    #       })
