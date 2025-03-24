@@ -11,7 +11,7 @@ resources:
   repositories:
     - repository: infra-repo
       type: github
-      name: your-org/infra-repo
+      name: OL-Smart-Clicker/infra-repo
       ref: refs/heads/staging
       endpoint: 'Smart Clicker 2.0'
 
