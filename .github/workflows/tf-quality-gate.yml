@@ -1,0 +1,37 @@
+name: Terraform Quality Gate
+on:
+  pull_request:
+    branches: [staging]
+
+jobs:
+  quality-checks:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    # TFLint with Azure-specific rules
+    - uses: terraform-linters/setup-tflint@v4
+      with:
+        tflint_version: 0.52.0
+        config_file: .tflint.hcl
+    
+    - run: tflint -f compact
+    
+    # Trivy Security Scan
+    - uses: aquasecurity/trivy-action@0.30.0
+      with:
+        scan-type: 'config'
+        scan-ref: './'
+        severity: 'CRITICAL,HIGH'
+    
+    # Branch protection requirement
+    - uses: actions/github-script@v6
+      if: github.event_name == 'pull_request'
+      with:
+        script: |
+          github.rest.pulls.updateBranch({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: context.payload.pull_request.number,
+            expected_head_sha: context.sha
+          })

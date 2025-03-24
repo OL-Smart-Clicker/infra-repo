@@ -1,0 +1,60 @@
+name: $(Date:yyyyMMdd)$(Rev:.r)
+trigger:
+  branches:
+    include:
+      - staging
+  paths:
+    include:
+      - terraform/*
+
+resources:
+  repositories:
+    - repository: infra-repo
+      type: github
+      name: your-org/infra-repo
+      ref: refs/heads/staging
+      endpoint: githubServiceConnection
+
+variables:
+  - group: terraform-vars
+  - name: TF_VERSION
+    value: 1.8.2
+
+stages:       
+- stage: Plan
+  jobs:
+  - job: Generate_TFPlan
+    steps:
+    - task: TerraformCLI@0
+      inputs:
+        command: plan
+        commandOptions: '-out=tfplan'
+        workingDirectory: 'terraform'
+        environmentServiceName: 'azure-oidc-connection'
+    - publish: $(System.DefaultWorkingDirectory)/terraform/tfplan
+      artifact: tfplan
+
+- stage: Approve
+  dependsOn: Plan
+  jobs:
+  - deployment: Admin_Approval
+    environment: Production
+    strategy:
+      runOnce:
+        deploy:
+          steps: []
+
+- stage: Apply
+  dependsOn: Approve
+  jobs:
+  - job: Execute_TFApply
+    steps:
+    - download: current
+      artifact: tfplan
+      
+    - task: TerraformCLI@0
+      inputs:
+        command: apply
+        commandOptions: 'tfplan'
+        workingDirectory: 'terraform'
+        environmentServiceName: 'azure-oidc-connection'
