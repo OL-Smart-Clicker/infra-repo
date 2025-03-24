@@ -7,6 +7,8 @@ trigger:
     include:
       - terraform/*
 
+pr: none # Do not run on PR
+
 # TEMPORARY
 pool:
   name: Self-hosted
