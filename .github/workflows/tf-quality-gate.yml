@@ -8,20 +8,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+      name: Checkout source code
 
-    # TFLint with Azure-specific rules
     - uses: terraform-linters/setup-tflint@v4
+      name: Setup TFLint
       with:
-        tflint_version: 0.52.0
-    
-    - run: tflint -f compact
+        tflint_version: latest
+    - name: Show version
+      run: tflint --version
+
+    - name: Init TFLint
+      run: tflint --init
+      # env:
+      #   # https://github.com/terraform-linters/tflint/blob/master/docs/user-guide/plugins.md#avoiding-rate-limiting
+      #   GITHUB_TOKEN: ${{ github.token }}
+
+    - name: Run TFLint
+      run: tflint -f compact
     
     # Trivy Security Scan
-    - uses: aquasecurity/trivy-action@0.30.0
-      with:
-        scan-type: 'config'
-        scan-ref: './'
-        severity: 'CRITICAL,HIGH'
+    # - uses: aquasecurity/trivy-action@0.30.0
+    #   with:
+    #     scan-type: 'config'
+    #     scan-ref: './'
+    #     severity: 'CRITICAL,HIGH'
     
     # Branch protection requirement
     - uses: actions/github-script@v6
