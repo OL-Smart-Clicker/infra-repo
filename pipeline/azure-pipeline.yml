@@ -13,10 +13,9 @@ resources:
       type: github
       name: your-org/infra-repo
       ref: refs/heads/staging
-      endpoint: githubServiceConnection
+      endpoint: 'Smart Clicker 2.0'
 
 variables:
-  - group: terraform-vars
   - name: TF_VERSION
     value: 1.8.2
   - name: ENVIRONMENT
@@ -27,13 +26,13 @@ stages:
   jobs:
   - job: Generate_TFPlan
     steps:
-    - task: TerraformCLI@0
+    - task: TerraformCLI@1
       inputs:
         command: init
         workingDirectory: 'terraform'
         environmentServiceName: 'tf-pipeline-sc'
 
-    - task: TerraformCLI@0
+    - task: TerraformCLI@1
       inputs:
         command: plan
         commandOptions: '-var-file=../config/$(ENVIRONMENT).tfvars -out=tfplan'
@@ -43,6 +42,16 @@ stages:
     - publish: $(System.DefaultWorkingDirectory)/terraform/tfplan
       artifact: tfplan
 
+- stage: Approve
+  dependsOn: Plan
+  jobs:
+  - deployment: Manual_Approval
+    environment: Production
+    strategy:
+      runOnce:
+        deploy:
+          steps: []
+
 - stage: Apply
   dependsOn: Approve
   jobs:
@@ -50,7 +59,7 @@ stages:
     steps:
     - download: current
       artifact: tfplan
-    - task: TerraformCLI@0
+    - task: TerraformCLI@1
       inputs:
         command: apply
         commandOptions: 'tfplan' # vars embedded in tfplan
