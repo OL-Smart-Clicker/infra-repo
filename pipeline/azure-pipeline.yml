@@ -30,12 +30,20 @@ stages:
   jobs:
   - job: Generate_TFPlan
     steps:
+    # Install Terraform 1.11.2
+    - task: TerraformInstaller@1
+      displayName: 'Install Terraform 1.11.2'
+      inputs:
+        terraformVersion: 1.11.2
+
+    # Initialize Terraform
     - task: TerraformCLI@1
       inputs:
         command: init
         workingDirectory: 'terraform'
         environmentServiceName: 'tf-pipeline-sc'
 
+    # Generate Terraform plan
     - task: TerraformCLI@1
       inputs:
         command: plan
@@ -43,6 +51,7 @@ stages:
         workingDirectory: 'terraform'
         environmentServiceName: 'tf-pipeline-sc'
 
+    # Publish the tfplan artifact for later use in Apply
     - publish: $(System.DefaultWorkingDirectory)/terraform/tfplan
       artifact: tfplan
 
@@ -66,6 +75,6 @@ stages:
     - task: TerraformCLI@1
       inputs:
         command: apply
-        commandOptions: 'tfplan' # vars embedded in tfplan
+        commandOptions: 'tfplan'  # vars embedded in tfplan
         workingDirectory: 'terraform'
         environmentServiceName: 'tf-pipeline-sc'
