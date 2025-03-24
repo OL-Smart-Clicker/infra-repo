@@ -6,6 +6,9 @@ on:
 jobs:
   quality-checks:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write  # Mandatory for branch updates
+      contents: read
     steps:
     - uses: actions/checkout@v4
       name: Checkout source code
@@ -19,6 +22,7 @@ jobs:
 
     - name: Init TFLint
       run: tflint --init
+      # -- RATE LIMITING FIX --
       # env:
       #   # https://github.com/terraform-linters/tflint/blob/master/docs/user-guide/plugins.md#avoiding-rate-limiting
       #   GITHUB_TOKEN: ${{ github.token }}
