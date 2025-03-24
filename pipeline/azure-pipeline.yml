@@ -7,6 +7,10 @@ trigger:
     include:
       - terraform/*
 
+# TEMPORARY
+pool:
+  name: Self-hosted
+
 resources:
   repositories:
     - repository: infra-repo
