@@ -9,6 +9,7 @@ jobs:
     permissions:
       pull-requests: write  # Mandatory for branch updates
       contents: read
+      actions: write
     steps:
     - uses: actions/checkout@v4
       name: Checkout source code
