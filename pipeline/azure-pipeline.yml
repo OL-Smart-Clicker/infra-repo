@@ -60,11 +60,15 @@ stages:
   dependsOn: Plan
   jobs:
   - deployment: Manual_Approval
-    environment: Staging
+    environment: Staging 
     strategy:
       runOnce:
         deploy:
-          steps: []
+          steps:
+          - task: ManualIntervention@8
+            inputs:
+              instructions: 'Please review the changes and approve the deployment to Staging.'
+              onTimeout: 'reject'
 
 - stage: Apply
   dependsOn: Approve
@@ -73,9 +77,10 @@ stages:
     steps:
     - download: current
       artifact: tfplan
+      path: $(System.DefaultWorkingDirectory)/terraform
     - task: TerraformCLI@1
       inputs:
         command: apply
-        commandOptions: 'tfplan'  # vars embedded in tfplan
+        commandOptions: '$(System.DefaultWorkingDirectory)/terraform/tfplan'  # vars embedded in tfplan
         workingDirectory: 'terraform'
         environmentServiceName: 'tf-pipeline-sc-staging'
