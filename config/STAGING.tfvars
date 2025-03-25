@@ -1,2 +1,2 @@
-env = "staging"
+env      = "staging"
 location = "West Europe"
