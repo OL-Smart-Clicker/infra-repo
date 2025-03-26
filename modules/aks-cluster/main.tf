@@ -8,35 +8,28 @@ resource "azurerm_kubernetes_cluster" "aks_cluster" {
   # Mandatory:
   # =================
 
-  name                = "wvh-aks-cluster"
+  name                = "${var.cluster_name}-${var.environment}"
   location            = var.location
-  resource_group_name = var.cluster_rg
-  dns_prefix          = "wvh-aks-cluster"
+  resource_group_name = azurerm_resource_group.cluster_rg
+  dns_prefix          = "${var.cluster_name}-${var.environment}"
   sku_tier            = "Free"
 
   default_node_pool {
-    name                  = "default"
-    vm_size               = "Standard_B2ms" # Standard_B2ms is the minimum size for AKS
-    enable_auto_scaling   = false
-    node_count             = 1
-    vnet_subnet_id        = azurerm_subnet.aks_subnet.id
-    os_disk_size_gb       = 20
-    type                  = "VirtualMachineScaleSets"
-    enable_node_public_ip = false
-    ultra_ssd_enabled     = false
-
-    # SPOT configuration
-    priority        = "Spot"
-    eviction_policy = "Delete"
-    spot_max_price  = -1 # Will not exceed on-demand cost
-
+    name                         = "default"
+    node_count                   = 1
+    vm_size                      = "Standard_DS1_v2" # 3.5 GB RAM, 1 vCPU
+    only_critical_addons_enabled = true              # tainting the nodes with CriticalAddonsOnly=true:NoSchedule to avoid scheduling workloads on the system node pool
+    upgrade_settings {
+      drain_timeout_in_minutes      = 0
+      max_surge                     = "10%"
+      node_soak_duration_in_minutes = 0
+    }
     node_labels = {
-      "nodepool-type" = "system"
-      "environment"   = "staging"
+      "nodetype" = "on-demand"
     }
     tags = {
       "environment" = "staging"
-      "cluster"     = "wvh-aks-cluster"
+      "cluster"     = "${var.cluster_name}-${var.environment}"
     }
   }
 
@@ -53,8 +46,7 @@ resource "azurerm_kubernetes_cluster" "aks_cluster" {
   }
 
   azure_active_directory_role_based_access_control {
-    managed                = true # Leverage Azure AD for RBAC
-    admin_group_object_ids = var.cluster_admins
+    admin_group_object_ids = var.cluster_admin_groups
     azure_rbac_enabled     = true
     # tenant_id              = "<your-tenant-id>"  # Optional, if different from current subscription
   }
@@ -93,13 +85,13 @@ resource "azurerm_kubernetes_cluster" "aks_cluster" {
     */
   }
 
-  oidc_issuer_enabled       = true # Enable OIDC for AKS - needed for EntraID integration
-  
+  oidc_issuer_enabled = true # Enable OIDC for AKS - needed for EntraID integration
+
   service_mesh_profile {
-    mode                               = "Istio"
-    internal_ingress_gateway_enabled   = false
-    external_ingress_gateway_enabled   = true
-    revisions                          = ["asm-1-20"]  # Canary Updates
+    mode                             = "Istio"
+    internal_ingress_gateway_enabled = false
+    external_ingress_gateway_enabled = true
+    revisions                        = ["asm-1-20"] # Canary Updates
   }
 
   workload_autoscaler_profile {
@@ -110,5 +102,27 @@ resource "azurerm_kubernetes_cluster" "aks_cluster" {
   tags = {
     "environment" = "staging"
     "cluster"     = "wvh-aks-cluster"
+  }
+}
+
+resource "azurerm_kubernetes_cluster_node_pool" "spot_pool" {
+  name                  = "userpool"
+  kubernetes_cluster_id = azurerm_kubernetes_cluster.aks_cluster.id
+  vm_size               = "Standard_B2s" # Burstable, cheap instance
+  auto_scaling_enabled  = true
+  min_count             = 0 # Scale down to 0 after hours
+  max_count             = 3 # Allow up to 3 instances during peak
+  mode                  = "User"
+
+  priority        = "Spot"   # Use Spot Instances for cost savings
+  eviction_policy = "Delete" # Auto-delete when reclaimed
+  spot_max_price  = -1       # Do not exceed On-Demand pricing
+
+  node_labels = {
+    "nodetype" = "spot"
+  }
+
+  tags = {
+    "environment" = "staging"
   }
 }

@@ -1,3 +1,13 @@
+variable "environment" {
+  description = "The Azure tenant environment"
+  type        = string
+  default     = "staging"
+  validation {
+    condition     = var.environment == "staging" || var.environment == "production"
+    error_message = "Invalid value for environment. Allowed values are staging, production"
+  }
+}
+
 variable "location" {
   description = "The location of the resources"
   type        = string
@@ -20,7 +30,7 @@ variable "auto_upgrade" {
 }
 
 variable "api_access_cidrs" {
-  description = "The list of IP ranges that can access the API server"
+  description = "The list of IP ranges that can access the AKS cluster's API server"
   type        = list(string)
   default     = []
   # Regex to validate CIDR
@@ -30,10 +40,15 @@ variable "api_access_cidrs" {
   }
 }
 
-variable "cluster_admins" {
-  description = "The list of users that will have admin access to the cluster"
+variable "cluster_admin_groups" {
+  description = "The list of EntraID user Group IDs that will have admin access to the cluster"
   type        = list(string)
   default     = []
+}
+
+variable "subnet_id" {
+  description = "The subnet ID that default AKS nodes will be deployed into"
+  type        = string
 }
 
 variable "enable_gatekeeper" {
@@ -46,4 +61,4 @@ variable "k8s_version" {
   description = "The version of Kubernetes to use for the AKS cluster"
   type        = string
   default     = "1.32.2"
-} 
+}
