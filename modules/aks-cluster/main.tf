@@ -91,7 +91,7 @@ resource "azurerm_kubernetes_cluster" "aks_cluster" {
     mode                             = "Istio"
     internal_ingress_gateway_enabled = false
     external_ingress_gateway_enabled = true
-    revisions                        = ["asm-1-20"] # Canary Updates
+    revisions                        = ["asm-1-25"] # Canary Updates
   }
 
   workload_autoscaler_profile {
