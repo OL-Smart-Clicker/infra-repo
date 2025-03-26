@@ -17,7 +17,7 @@ resource "azurerm_kubernetes_cluster" "aks_cluster" {
   default_node_pool {
     name                         = "default"
     node_count                   = 1
-    vm_size                      = "Standard_DS1_v2" # 3.5 GB RAM, 1 vCPU
+    vm_size                      = "Standard_D2pls_v6" # 4 GB RAM, 2 vCPU, $54.17/month
     only_critical_addons_enabled = true              # tainting the nodes with CriticalAddonsOnly=true:NoSchedule to avoid scheduling workloads on the system node pool
     upgrade_settings {
       drain_timeout_in_minutes      = 0
