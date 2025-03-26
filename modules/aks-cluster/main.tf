@@ -38,7 +38,7 @@ resource "azurerm_kubernetes_cluster" "aks_cluster" {
   # =================
 
   # Automatic kubernetes version upgrade
-  automatic_upgrade_channel = var.auto_upgrade
+  # automatic_upgrade_channel = var.auto_upgrade
 
   # API access CIDR whitelist
   api_server_access_profile {
