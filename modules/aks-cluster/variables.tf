@@ -60,5 +60,5 @@ variable "enable_gatekeeper" {
 variable "k8s_version" {
   description = "The version of Kubernetes to use for the AKS cluster"
   type        = string
-  default     = "1.32.2"
+  default     = "1.31.6"
 }
