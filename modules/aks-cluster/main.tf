@@ -17,12 +17,10 @@ resource "azurerm_kubernetes_cluster" "aks_cluster" {
   default_node_pool {
     name                  = "default"
     vm_size               = "Standard_B2ms" # Standard_B2ms is the minimum size for AKS
-    enable_auto_scaling   = true
-    min_count             = 1
-    max_count             = 5
+    enable_auto_scaling   = false
+    node_count             = 1
     vnet_subnet_id        = azurerm_subnet.aks_subnet.id
-    max_pods              = 50 # Maximum number of pods per node
-    os_disk_size_gb       = 128
+    os_disk_size_gb       = 20
     type                  = "VirtualMachineScaleSets"
     enable_node_public_ip = false
     ultra_ssd_enabled     = false
@@ -37,8 +35,8 @@ resource "azurerm_kubernetes_cluster" "aks_cluster" {
       "environment"   = "staging"
     }
     tags = {
-      "Environment" = "Staging"
-      "Cluster"     = "wvh-aks-cluster"
+      "environment" = "staging"
+      "cluster"     = "wvh-aks-cluster"
     }
   }
 
@@ -52,14 +50,6 @@ resource "azurerm_kubernetes_cluster" "aks_cluster" {
   # API access CIDR whitelist
   api_server_access_profile {
     authorized_ip_ranges = var.api_access_cidrs
-  }
-
-  auto_scaler_profile {
-    balance_similar_node_groups      = true # Balance the number of nodes accross zones
-    expander                         = "least-waste"
-    max_node_provisioning_time       = "15m"
-    scale_down_delay_after_add       = "5m"
-    scale_down_utilization_threshold = 0.4 # At 40% utilization - agressive
   }
 
   azure_active_directory_role_based_access_control {
@@ -103,14 +93,14 @@ resource "azurerm_kubernetes_cluster" "aks_cluster" {
     */
   }
 
-  #   node_auto_provisioning {
-  #     enabled = true
-  #     spot_instances {
-  #       enabled = true
-  #     }
-  #   }
   oidc_issuer_enabled       = true # Enable OIDC for AKS - needed for EntraID integration
-  open_service_mesh_enabled = true # Advanced network security features
+  
+  service_mesh_profile {
+    mode                               = "Istio"
+    internal_ingress_gateway_enabled   = false
+    external_ingress_gateway_enabled   = true
+    revisions                          = ["asm-1-20"]  # Canary Updates
+  }
 
   workload_autoscaler_profile {
     keda_enabled                    = true
@@ -118,7 +108,7 @@ resource "azurerm_kubernetes_cluster" "aks_cluster" {
   }
 
   tags = {
-    "Environment" = "Staging"
-    "Cluster"     = "wvh-aks-cluster"
+    "environment" = "staging"
+    "cluster"     = "wvh-aks-cluster"
   }
 }
