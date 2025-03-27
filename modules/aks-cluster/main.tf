@@ -3,7 +3,7 @@ resource "azurerm_resource_group" "cluster_rg" {
   location = var.location
 }
 
-resource "azurerm_kubernetes_cluster" "aks_cluster" {
+resource "azurerm_kubernetes_cluster" "vwh_aks_cluster" {
   # =================
   # Mandatory:
   # =================
