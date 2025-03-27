@@ -109,7 +109,7 @@ resource "azurerm_kubernetes_cluster" "vwh_aks_cluster" {
 
 resource "azurerm_kubernetes_cluster_node_pool" "spot_pool" {
   name                  = "userpool"
-  kubernetes_cluster_id = azurerm_kubernetes_cluster.aks_cluster.id
+  kubernetes_cluster_id = azurerm_kubernetes_cluster.vwh_aks_cluster.id
   vm_size               = "Standard_B2s" # Burstable, cheap instance
   vnet_subnet_id        = var.subnet_id
   auto_scaling_enabled  = true
