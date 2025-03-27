@@ -20,7 +20,7 @@ resource "azurerm_kubernetes_cluster" "aks_cluster" {
     vm_size                      = "Standard_D2s_v4" # 8 GB RAM, 2 vCPU, $83.95/month
     pod_subnet_id                = var.subnet_id
     only_critical_addons_enabled = true # tainting the nodes with CriticalAddonsOnly=true:NoSchedule to avoid scheduling workloads on the system node pool
-    temporary_name_for_rotation = "tempsysnodepool"
+    temporary_name_for_rotation = "tempnodepool"
     upgrade_settings {
       drain_timeout_in_minutes      = 0
       max_surge                     = "10%"
