@@ -18,7 +18,8 @@ resource "azurerm_kubernetes_cluster" "aks_cluster" {
     name                         = "default"
     node_count                   = 1
     vm_size                      = "Standard_D2s_v4" # 8 GB RAM, 2 vCPU, $83.95/month
-    only_critical_addons_enabled = true              # tainting the nodes with CriticalAddonsOnly=true:NoSchedule to avoid scheduling workloads on the system node pool
+    pod_subnet_id                = var.subnet_id
+    only_critical_addons_enabled = true # tainting the nodes with CriticalAddonsOnly=true:NoSchedule to avoid scheduling workloads on the system node pool
     upgrade_settings {
       drain_timeout_in_minutes      = 0
       max_surge                     = "10%"
@@ -109,6 +110,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "spot_pool" {
   name                  = "userpool"
   kubernetes_cluster_id = azurerm_kubernetes_cluster.aks_cluster.id
   vm_size               = "Standard_B2s" # Burstable, cheap instance
+  pod_subnet_id         = var.subnet_id
   auto_scaling_enabled  = true
   min_count             = 0 # Scale down to 0 after hours
   max_count             = 3 # Allow up to 3 instances during peak
