@@ -27,6 +27,9 @@ resource "azurerm_iothub" "vwh_iothub" {
 
   public_network_access_enabled = true
 
+  # Must be set for free tier (MAX 2 partitions)
+  event_hub_partition_count = var.environment == "staging" ? 2 : null
+
   # Network security configuration
   network_rule_set {
     default_action                     = "Deny"

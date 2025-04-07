@@ -128,6 +128,13 @@ resource "azurerm_kubernetes_cluster_node_pool" "spot_pool" {
     "nodetype" = "spot"
   }
 
+  lifecycle { # Azure will change these automatically
+    ignore_changes = [
+      node_labels,
+      node_taints
+    ]
+  }
+
   tags = {
     "environment" = "staging"
   }
