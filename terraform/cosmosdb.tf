@@ -43,13 +43,20 @@ resource "azurerm_cosmosdb_account" "vwh_cosmosdb" {
   free_tier_enabled             = var.environment == "staging" ? true : false
   automatic_failover_enabled    = var.environment == "production" ? true : false
   burst_capacity_enabled        = true
-  public_network_access_enabled = false
   local_authentication_disabled = true
 
   capacity {
     total_throughput_limit = var.environment == "production" ? -1 : 100 # Fall within the free tier limit for staging
   }
 
+  # Networking
+  public_network_access_enabled = true
+  ip_range_filter = [
+    "13.91.105.215/32", # AZ Portal 1
+    "4.210.172.107/32", # AZ Portal 2
+    "13.88.56.148/32",  # AZ Portal 3
+    "40.91.218.243/32", # AZ Portal 4
+  ]
   network_acl_bypass_for_azure_services = true
   is_virtual_network_filter_enabled     = true
   virtual_network_rule {
