@@ -30,3 +30,48 @@ resource "azurerm_subnet" "private_subnet" {
   virtual_network_name = azurerm_virtual_network.main_vnet.name
   address_prefixes     = ["10.1.3.0/24"]
 }
+
+# DNS Infrastructure ($0.50/month per zone)
+resource "azurerm_private_dns_zone" "private_dns" {
+  name                = "privatelink.documents.azure.com"
+  resource_group_name = azurerm_resource_group.network_rg.name
+  tags = {
+    Environment = var.environment
+  }
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "aks_vnet_link" {
+  name                  = "aks-dns-link"
+  resource_group_name   = azurerm_resource_group.network_rg.name
+  private_dns_zone_name = azurerm_private_dns_zone.private_dns.name
+  virtual_network_id    = azurerm_virtual_network.main_vnet.id
+  tags = {
+    Environment = var.environment
+  }
+}
+
+# Private Endpoint with Cost-Optimized DNS
+resource "azurerm_private_endpoint" "cosmos" {
+  name                = "pe-${local.cosmos_name}"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.network_rg.name
+  subnet_id           = azurerm_subnet.aks_subnet.id
+
+  private_dns_zone_group {
+    name = "privatelink-documents-azure-com"
+    private_dns_zone_ids = [
+      azurerm_private_dns_zone.private_dns.id
+    ]
+  }
+
+  private_service_connection {
+    name                           = "cosmos-private-link"
+    private_connection_resource_id = azurerm_cosmosdb_account.vwh_cosmosdb.id
+    subresource_names              = ["Sql"]
+    is_manual_connection           = false
+  }
+
+  tags = {
+    Environment = var.environment
+  }
+}

@@ -37,7 +37,7 @@ jobs:
         scan-type: 'config'
         scan-ref: './'
         severity: 'CRITICAL,HIGH'
-    
+        
     # Branch protection requirement
     # - uses: actions/github-script@v6
     #   if: github.event_name == 'pull_request'

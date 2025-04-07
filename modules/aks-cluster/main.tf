@@ -18,9 +18,9 @@ resource "azurerm_kubernetes_cluster" "vwh_aks_cluster" {
     name                         = "default"
     node_count                   = 1
     vm_size                      = "Standard_D2s_v4" # 8 GB RAM, 2 vCPU, $83.95/month
-    vnet_subnet_id                = var.subnet_id
+    vnet_subnet_id               = var.subnet_id
     only_critical_addons_enabled = true # tainting the nodes with CriticalAddonsOnly=true:NoSchedule to avoid scheduling workloads on the system node pool
-    temporary_name_for_rotation = "tempnodepool"
+    temporary_name_for_rotation  = "tempnodepool"
     upgrade_settings {
       drain_timeout_in_minutes      = 0
       max_surge                     = "10%"
@@ -53,6 +53,9 @@ resource "azurerm_kubernetes_cluster" "vwh_aks_cluster" {
     # tenant_id              = "<your-tenant-id>"  # Optional, if different from current subscription
   }
   local_account_disabled = true # Disable local account for AKS and rely on Azure AD
+
+  # Azure LB tier
+  # load_balancer_sku = var.lb_sku
 
   # Enable Azure Policy for AKS - OPA Gatekeeper
   azure_policy_enabled = var.enable_gatekeeper

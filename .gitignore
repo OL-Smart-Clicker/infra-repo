@@ -1,5 +1,12 @@
 # Local .terraform directories
 **/.terraform/*
+**/.terraform
+
+# Eval environments
+0-eval.tf
+
+# Diagrams - for documentation repo
+**/diags
 
 # .tfstate files
 *.tfstate
@@ -35,3 +42,9 @@ terraform.rc
 # Wastebin
 /.trash/*
 /.trash
+
+# Local TODO
+TODO.md
+
+# Terraform BAK files
+*.tf_bak
