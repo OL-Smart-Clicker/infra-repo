@@ -40,15 +40,6 @@ resource "azurerm_cosmosdb_account" "vwh_cosmosdb" {
     }
   }
 
-  # Strict IPv4 whitelisting
-  ip_range_filter = [
-    "13.91.105.215/32", # AZ Portal 1
-    "4.210.172.107/32", # AZ Portal 2
-    "13.88.56.148/32",  # AZ Portal 3
-    "40.91.218.243/32", # AZ Portal 4
-    "10.1.2.0/24"       # AKS subnet
-  ]
-
   free_tier_enabled             = var.environment == "staging" ? true : false
   automatic_failover_enabled    = var.environment == "production" ? true : false
   burst_capacity_enabled        = true
