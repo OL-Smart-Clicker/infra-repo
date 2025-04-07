@@ -11,7 +11,7 @@ resource "azurerm_cosmosdb_account" "vwh_cosmosdb" {
 
   name                = local.cosmos_name
   resource_group_name = azurerm_resource_group.data_rg.name
-  location            = var.location
+  location            = "germanywestcentral" # NOT WESTEUROPE - quota issues
   offer_type          = "Standard"
 
   # =================
