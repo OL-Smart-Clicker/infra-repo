@@ -1,6 +1,7 @@
 locals {
   cosmos_consistency = var.environment == "staging" ? "Session" : "BoundedStaleness"
   cosmos_name        = lower("wvh-cosmos-${var.environment}")
+  cosmos_region      = "germanywestcentral" # NOT WESTEUROPE - quota issues
 }
 
 # Cosmos DB with Free Tier Option
@@ -11,7 +12,7 @@ resource "azurerm_cosmosdb_account" "vwh_cosmosdb" {
 
   name                = local.cosmos_name
   resource_group_name = azurerm_resource_group.data_rg.name
-  location            = var.location
+  location            = local.cosmos_region
   offer_type          = "Standard"
 
   # =================
@@ -26,7 +27,7 @@ resource "azurerm_cosmosdb_account" "vwh_cosmosdb" {
   }
 
   geo_location {
-    location          = var.location
+    location          = local.cosmos_region
     failover_priority = 0
   }
 
