@@ -56,10 +56,10 @@ resource "azurerm_iothub_endpoint_cosmosdb_account" "iothub_cosmosdb_endpoint" {
   name                   = "IoTCosmosDBEndpoint"
   resource_group_name    = azurerm_resource_group.data_rg.name
   iothub_id              = azurerm_iothub.vwh_iothub.id
-  container_name         = "clicker-data"
-  database_name          = "wvh-cosmosdb"
-  # partition_key_name     = "officeID"
-  # partition_key_template = "officeID"
+  container_name         = azurerm_cosmosdb_sql_container.clicker_data_container.name
+  database_name          = azurerm_cosmosdb_sql_database.wvh_db.name
+  partition_key_name     = "officeSpaceId"
+  partition_key_template = "officeSpaceId"
   endpoint_uri           = azurerm_cosmosdb_account.vwh_cosmosdb.endpoint
   authentication_type    = "identityBased"
 }

@@ -83,3 +83,40 @@ resource "azurerm_cosmosdb_account" "vwh_cosmosdb" {
   }
 
 }
+
+resource "azurerm_cosmosdb_sql_database" "wvh_db" {
+  name                = "wvh-cosmosdb"
+  resource_group_name = azurerm_resource_group.data_rg.name
+  account_name        = azurerm_cosmosdb_account.vwh_cosmosdb.name
+}
+
+resource "azurerm_cosmosdb_sql_container" "clicker_data_container" {
+  name                  = "clicker-data"
+  resource_group_name   = azurerm_resource_group.data_rg.name
+  account_name          = azurerm_cosmosdb_account.vwh_cosmosdb.name
+  database_name         = azurerm_cosmosdb_sql_database.wvh_db.name
+  partition_key_paths   = ["/officeSpaceId"]
+  partition_key_version = 1
+
+  /* -- To establish a unique key constraint, uncomment the following block
+  indexing_policy {
+    indexing_mode = "consistent"
+
+    included_path {
+      path = "/*"
+    }
+
+    included_path {
+      path = "/included/?"
+    }
+
+    excluded_path {
+      path = "/excluded/?"
+    }
+  }
+  */
+
+  unique_key {
+    paths = ["/timestamp"]
+  }
+}
