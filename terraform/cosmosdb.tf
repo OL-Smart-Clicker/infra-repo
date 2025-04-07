@@ -47,7 +47,7 @@ resource "azurerm_cosmosdb_account" "vwh_cosmosdb" {
   local_authentication_disabled = true
 
   capacity {
-    total_throughput_limit = var.environment == "production" ? -1 : 100 # Fall within the free tier limit for staging
+    total_throughput_limit = var.environment == "production" ? -1 : 400 # Fall within the free tier limit for staging
   }
 
   # Networking
