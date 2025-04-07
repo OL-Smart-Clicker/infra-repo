@@ -62,3 +62,13 @@ variable "k8s_version" {
   type        = string
   default     = "1.31.6"
 }
+
+variable "lb_sku" {
+  description = "The SKU of the AKS cluster LB. Valid values are 'basic' and 'standard'"
+  type        = string
+  default     = "standard"
+  validation {
+    condition     = var.lb_sku == "basic" || var.lb_sku == "standard"
+    error_message = "Invalid value for LB SKU. Valid values are 'basic' and 'standard'"
+  }
+}
