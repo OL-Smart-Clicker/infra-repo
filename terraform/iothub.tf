@@ -59,7 +59,7 @@ resource "azurerm_iothub_endpoint_cosmosdb_account" "iothub_cosmosdb_endpoint" {
   container_name         = azurerm_cosmosdb_sql_container.clicker_data_container.name
   database_name          = azurerm_cosmosdb_sql_database.wvh_db.name
   partition_key_name     = "officeSpaceId"
-  partition_key_template = "officeSpaceId"
+  partition_key_template = "{deviceid}-{YYYY}-{MM}-{DD}"
   endpoint_uri           = azurerm_cosmosdb_account.vwh_cosmosdb.endpoint
   authentication_type    = "identityBased"
 }
@@ -74,14 +74,4 @@ resource "azurerm_iothub_route" "iot-cosmosdb-route" {
   condition      = "true" # Route all device messages
   endpoint_names = [azurerm_iothub_endpoint_cosmosdb_account.iothub_cosmosdb_endpoint.name]
   enabled        = true
-}
-
-# Allow IoT Hub to write to CosmosDB - identityBased authentication
-resource "azurerm_cosmosdb_sql_role_assignment" "iothub_to_cosmosdb_role" {
-  resource_group_name = azurerm_resource_group.data_rg.name
-  account_name        = azurerm_cosmosdb_account.vwh_cosmosdb.name
-  # CosmosDB contributor
-  role_definition_id = "${azurerm_cosmosdb_account.vwh_cosmosdb.id}/sqlRoleDefinitions/00000000-0000-0000-0000-000000000002"
-  principal_id       = azurerm_iothub.vwh_iothub.identity[0].principal_id
-  scope              = azurerm_cosmosdb_account.vwh_cosmosdb.id
 }

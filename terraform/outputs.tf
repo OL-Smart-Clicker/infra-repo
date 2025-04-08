@@ -9,3 +9,7 @@ output "cosmos_endpoint" {
 output "private_endpoint_fqdn" {
   value = "${azurerm_cosmosdb_account.vwh_cosmosdb.name}.privatelink.documents.azure.com"
 }
+
+output "aks_irsa_id" {
+  value = module.aks_cluster.aks_irsa_id
+}
