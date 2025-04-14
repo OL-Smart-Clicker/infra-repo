@@ -48,3 +48,6 @@ TODO.md
 
 # Terraform BAK files
 *.tf_bak
+
+# Manifests
+manifests/

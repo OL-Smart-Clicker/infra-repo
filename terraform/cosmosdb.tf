@@ -53,10 +53,7 @@ resource "azurerm_cosmosdb_account" "vwh_cosmosdb" {
   # Networking
   public_network_access_enabled = true
   ip_range_filter = [
-    "13.91.105.215/32", # AZ Portal 1
-    "4.210.172.107/32", # AZ Portal 2
-    "13.88.56.148/32",  # AZ Portal 3
-    "40.91.218.243/32", # AZ Portal 4
+    "0.0.0.0" # Public - Azure Datacenters (IoT Hub)
   ]
   network_acl_bypass_for_azure_services = true
   is_virtual_network_filter_enabled     = true
@@ -115,8 +112,5 @@ resource "azurerm_cosmosdb_sql_container" "clicker_data_container" {
     }
   }
   */
-
-  unique_key {
-    paths = ["/timestamp"]
-  }
+  # GOTCHA - cannot use unique keys when integrating with IoT Hub
 }
