@@ -4,7 +4,7 @@ resource "azurerm_cosmosdb_sql_role_assignment" "aks_to_cosmosdb_read_role" {
   account_name        = azurerm_cosmosdb_account.vwh_cosmosdb.name
   # CosmosDB reader (R)
   role_definition_id = "${azurerm_cosmosdb_account.vwh_cosmosdb.id}/sqlRoleDefinitions/00000000-0000-0000-0000-000000000001"
-  principal_id       = module.aks_cluster.aks_irsa_id
+  principal_id       = module.aks_cluster.aks_irsa_uuid
   scope              = azurerm_cosmosdb_account.vwh_cosmosdb.id
 }
 

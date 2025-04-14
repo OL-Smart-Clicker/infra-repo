@@ -11,7 +11,7 @@ output "private_endpoint_fqdn" {
 }
 
 output "aks_irsa_id" {
-  value = module.aks_cluster.aks_irsa_id
+  value = module.aks_cluster.aks_irsa_uuid
 }
 
 output "acr_id" {
