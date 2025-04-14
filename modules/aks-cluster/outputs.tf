@@ -1,5 +1,5 @@
-output "aks_irsa_id" {
-  value = azurerm_user_assigned_identity.aks_irsa.id
+output "aks_irsa_uuid" {
+  value = azurerm_user_assigned_identity.aks_irsa.principal_id
 }
 
 output "cluster_identity" {
