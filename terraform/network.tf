@@ -57,21 +57,18 @@ resource "azurerm_private_endpoint" "cosmos" {
   location            = var.location
   resource_group_name = azurerm_resource_group.network_rg.name
   subnet_id           = azurerm_subnet.aks_subnet.id
-
   private_dns_zone_group {
     name = "privatelink-documents-azure-com"
     private_dns_zone_ids = [
       azurerm_private_dns_zone.private_dns.id
     ]
   }
-
   private_service_connection {
     name                           = "cosmos-private-link"
     private_connection_resource_id = azurerm_cosmosdb_account.vwh_cosmosdb.id
     subresource_names              = ["Sql"]
     is_manual_connection           = false
   }
-
   tags = {
     Environment = var.environment
   }

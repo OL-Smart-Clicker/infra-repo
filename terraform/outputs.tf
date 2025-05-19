@@ -10,13 +10,13 @@ output "private_endpoint_fqdn" {
   value = "${azurerm_cosmosdb_account.vwh_cosmosdb.name}.privatelink.documents.azure.com"
 }
 
-output "aks_irsa_id" {
-  value = module.aks_cluster.aks_irsa_uuid
+output "aks_irsa_clientid" {
+  value = module.aks_cluster.aks_irsa_clientid
 }
 
-output "acr_id" {
-  description = "The ID of the Azure Container Registry"
-  value       = azurerm_container_registry.wvh_acr.id
+output "acr_username" {
+  description = "The Username of the Azure Container Registry"
+  value       = azurerm_container_registry.wvh_acr.admin_username
 }
 
 output "acr_login_server" {

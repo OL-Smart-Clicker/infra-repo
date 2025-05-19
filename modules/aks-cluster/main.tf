@@ -50,9 +50,9 @@ resource "azurerm_kubernetes_cluster" "vwh_aks_cluster" {
   azure_active_directory_role_based_access_control {
     admin_group_object_ids = var.cluster_admin_groups
     azure_rbac_enabled     = true
-    # tenant_id              = "<your-tenant-id>"  # Optional, if different from current subscription
   }
-  local_account_disabled = true # Disable local account for AKS and rely on Azure AD
+  # Disable local account for AKS and rely ONLY on Azure AD
+  local_account_disabled = true
 
   # Azure LB tier
   # load_balancer_sku = var.lb_sku
@@ -63,7 +63,7 @@ resource "azurerm_kubernetes_cluster" "vwh_aks_cluster" {
   # ingress_application_gateway - (Optional) Configuration block for Application Gateway Ingress Controller.
   key_vault_secrets_provider {
     secret_rotation_enabled  = true
-    secret_rotation_interval = "5m"
+    secret_rotation_interval = "60m"
   }
 
   kubernetes_version = var.k8s_version
@@ -90,18 +90,19 @@ resource "azurerm_kubernetes_cluster" "vwh_aks_cluster" {
     */
   }
 
-  oidc_issuer_enabled = true # Enable OIDC for AKS - needed for EntraID integration
+  oidc_issuer_enabled       = true # Enable OIDC for AKS - needed for EntraID integration
+  workload_identity_enabled = true # Allows in-cluster workloads to use Azure AD identities
 
-  service_mesh_profile {
-    mode                             = "Istio"
-    internal_ingress_gateway_enabled = false
-    external_ingress_gateway_enabled = true
-    revisions                        = ["asm-1-24"] # Canary Updates
-  }
+  # service_mesh_profile { # -- Optional - Service Mesh configuration block. Requires potent node pool.
+  #   mode                             = "Istio"
+  #   internal_ingress_gateway_enabled = false
+  #   external_ingress_gateway_enabled = true
+  #   revisions                        = ["asm-1-24"] # Canary Updates
+  # }
 
   workload_autoscaler_profile {
     keda_enabled                    = true
-    vertical_pod_autoscaler_enabled = true
+    vertical_pod_autoscaler_enabled = false
   }
 
   tags = {
@@ -111,21 +112,48 @@ resource "azurerm_kubernetes_cluster" "vwh_aks_cluster" {
 }
 
 resource "azurerm_kubernetes_cluster_node_pool" "spot_pool" {
-  name                  = "userpool"
-  kubernetes_cluster_id = azurerm_kubernetes_cluster.vwh_aks_cluster.id
-  vm_size               = "Standard_B2s" # Burstable, cheap instance
-  vnet_subnet_id        = var.subnet_id
-  auto_scaling_enabled  = true
-  min_count             = 0 # Scale down to 0 after hours
-  max_count             = 3 # Allow up to 3 instances during peak
-  mode                  = "User"
-
-  priority        = "Spot"   # Use Spot Instances for cost savings
-  eviction_policy = "Delete" # Auto-delete when reclaimed
-  spot_max_price  = -1       # Do not exceed On-Demand pricing
+  name                        = "userpool"
+  kubernetes_cluster_id       = azurerm_kubernetes_cluster.vwh_aks_cluster.id
+  vm_size                     = "Standard_B2pls_v2" # Burstable, cheap instance
+  vnet_subnet_id              = var.subnet_id
+  auto_scaling_enabled        = true
+  min_count                   = 0 # Scale down to 0 after hours
+  max_count                   = 2 # Allow up to 2 instances during peak (quota)
+  mode                        = "User"
+  temporary_name_for_rotation = "tempuserpool"
+  priority                    = "Spot"   # Use Spot Instances for cost savings
+  eviction_policy             = "Delete" # Auto-delete when reclaimed
+  spot_max_price              = -1       # Do not exceed On-Demand pricing
 
   node_labels = {
     "nodetype" = "spot"
+  }
+
+  lifecycle { # Azure will change these automatically
+    ignore_changes = [
+      node_labels,
+      node_taints
+    ]
+  }
+
+  tags = {
+    "environment" = "staging"
+  }
+}
+
+resource "azurerm_kubernetes_cluster_node_pool" "non_spot_pool" {
+  name                        = "userpooldmd"
+  kubernetes_cluster_id       = azurerm_kubernetes_cluster.vwh_aks_cluster.id
+  vm_size                     = "Standard_B2pls_v2" # Burstable, cheap instance
+  vnet_subnet_id              = var.subnet_id
+  auto_scaling_enabled        = true
+  min_count                   = 0 # Scale down to 0 after hours
+  max_count                   = 2 # Allow up to 2 instances during peak (quota)
+  mode                        = "User"
+  temporary_name_for_rotation = "tempusrpoo1"
+
+  node_labels = {
+    "nodetype" = "on-demand"
   }
 
   lifecycle { # Azure will change these automatically

@@ -1,0 +1,15 @@
+applications:
+  software.app-of-apps:
+    namespace: argocd
+    project: default
+    destination:
+      server: https://kubernetes.default.svc
+      namespace: argocd
+    source:
+      repoURL: https://github.com/OL-Smart-Clicker/app-repo
+      path: helm/apps
+      targetRevision: staging
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
