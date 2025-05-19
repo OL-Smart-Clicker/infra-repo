@@ -1,8 +1,11 @@
+resource "null_resource" "aks_auth" {
+  provisioner "local-exec" {
+    command = "az aks get-credentials --resource-group ${azurerm_resource_group.cluster_rg.name} --name ${azurerm_kubernetes_cluster.vwh_aks_cluster.name} --overwrite-existing"
+  }
+}
+
 provider "helm" {
   kubernetes {
-    host                   = azurerm_kubernetes_cluster.aks_cluster.kube_config[0].host
-    client_certificate     = base64decode(azurerm_kubernetes_cluster.aks_cluster.kube_config[0].client_certificate)
-    client_key             = base64decode(azurerm_kubernetes_cluster.aks_cluster.kube_config[0].client_key)
-    cluster_ca_certificate = base64decode(azurerm_kubernetes_cluster.aks_cluster.kube_config[0].cluster_ca_certificate)
+    config_path = "~/.kube/config"
   }
 }

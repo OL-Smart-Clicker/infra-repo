@@ -1,0 +1,4 @@
+apiVersion: v2
+name: key-vault-operator
+description: Helm chart for configuring Key Vault Operator in AKS
+version: 0.0.1

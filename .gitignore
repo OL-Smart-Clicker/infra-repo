@@ -6,7 +6,7 @@
 0-eval.tf
 
 # Diagrams - for documentation repo
-**/diags
+**/diags/*.bkp
 
 # .tfstate files
 *.tfstate

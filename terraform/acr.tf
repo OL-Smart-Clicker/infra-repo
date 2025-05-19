@@ -2,6 +2,7 @@ resource "azurerm_container_registry" "wvh_acr" {
   name                = "wvhacr${var.environment}"
   resource_group_name = module.aks_cluster.cluster_rg
   location            = var.location
+  admin_enabled       = true # Needed to integrate GitHub Actions with ACR
   # Conditional SKU based on environment
   sku = var.environment == "staging" ? "Basic" : "Standard"
   tags = {

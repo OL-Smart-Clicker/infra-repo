@@ -47,7 +47,7 @@ resource "azurerm_cosmosdb_account" "vwh_cosmosdb" {
   local_authentication_disabled = true
 
   capacity {
-    total_throughput_limit = var.environment == "production" ? -1 : 400 # Fall within the free tier limit for staging
+    total_throughput_limit = var.environment == "production" ? -1 : 1000 # Fall within the free tier limit for staging
   }
 
   # Networking
@@ -113,4 +113,43 @@ resource "azurerm_cosmosdb_sql_container" "clicker_data_container" {
   }
   */
   # GOTCHA - cannot use unique keys when integrating with IoT Hub
+}
+
+resource "azurerm_cosmosdb_sql_container" "qotd_container" {
+  name                  = "qotd"
+  resource_group_name   = azurerm_resource_group.data_rg.name
+  account_name          = azurerm_cosmosdb_account.vwh_cosmosdb.name
+  database_name         = azurerm_cosmosdb_sql_database.wvh_db.name
+  partition_key_paths   = ["/officeSpaceId"]
+  partition_key_version = 1
+}
+
+resource "azurerm_cosmosdb_sql_container" "offices_container" {
+  name                  = "offices"
+  resource_group_name   = azurerm_resource_group.data_rg.name
+  account_name          = azurerm_cosmosdb_account.vwh_cosmosdb.name
+  database_name         = azurerm_cosmosdb_sql_database.wvh_db.name
+  partition_key_paths   = ["/tenantId"]
+  partition_key_version = 1
+}
+
+resource "azurerm_cosmosdb_sql_container" "roles_container" {
+  name                  = "roles"
+  resource_group_name   = azurerm_resource_group.data_rg.name
+  account_name          = azurerm_cosmosdb_account.vwh_cosmosdb.name
+  database_name         = azurerm_cosmosdb_sql_database.wvh_db.name
+  partition_key_paths   = ["/roleName"]
+  partition_key_version = 1
+}
+
+resource "azurerm_cosmosdb_sql_container" "users_roles_container" {
+  name                  = "users-roles"
+  resource_group_name   = azurerm_resource_group.data_rg.name
+  account_name          = azurerm_cosmosdb_account.vwh_cosmosdb.name
+  database_name         = azurerm_cosmosdb_sql_database.wvh_db.name
+  partition_key_paths   = ["/roleId"]
+  partition_key_version = 1
+  unique_key {
+    paths = ["/userId"]
+  }
 }
