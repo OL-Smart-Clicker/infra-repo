@@ -75,3 +75,37 @@ resource "azurerm_iothub_route" "iot-cosmosdb-route" {
   endpoint_names = [azurerm_iothub_endpoint_cosmosdb_account.iothub_cosmosdb_endpoint.name]
   enabled        = true
 }
+
+resource "azurerm_iothub_shared_access_policy" "wvh_iothub_ap" {
+  name                = "wvh-iothub-policy"
+  resource_group_name = azurerm_resource_group.rg.name
+  iothub_name         = azurerm_iothub.iothub.name
+
+  registry_read   = true # List devices
+  registry_write  = true # Create devices
+  service_connect = true # Connect to the IoT Hub service as app
+  device_connect  = true # Connect to the IoT Hub as a device
+}
+
+# Device provisioning service (DPS) for IoT Hub
+resource "azurerm_iothub_dps" "wvh_iothub_dps" {
+  name                = "wvh-iothub-dps-${var.environment}"
+  resource_group_name = azurerm_resource_group.data_rg.name
+  location            = var.location
+  allocation_policy   = "Static"
+
+  sku {
+    name     = "S1"
+    capacity = "1"
+  }
+
+  tags = {
+    CostPolicy  = var.environment == "staging" ? "FreeTier" : "Production"
+    Environment = var.environment
+  }
+
+  linked_hub {
+    connection_string = azurerm_iothub_shared_access_policy.wvh_iothub_ap.primary_connection_string
+    location          = var.location
+  }
+}

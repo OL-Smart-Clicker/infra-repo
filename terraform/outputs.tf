@@ -23,3 +23,13 @@ output "acr_login_server" {
   description = "The login server URL for the Azure Container Registry"
   value       = azurerm_container_registry.wvh_acr.login_server
 }
+
+output "dps_id_scope" {
+  description = "The unique identifier of the IoT Device Provisioning Service (ID Scope) needed by devices."
+  value       = azurerm_iothub_dps.wvh_iothub_dps.id_scope
+}
+
+output "dps_device_provisioning_host_name" {
+  description = "The device endpoint of the IoT Device Provisioning Service needed by devices."
+  value       = azurerm_iothub_dps.wvh_iothub_dps.device_provisioning_host_name
+}
