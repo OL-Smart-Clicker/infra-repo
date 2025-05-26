@@ -78,8 +78,8 @@ resource "azurerm_iothub_route" "iot-cosmosdb-route" {
 
 resource "azurerm_iothub_shared_access_policy" "wvh_iothub_ap" {
   name                = "wvh-iothub-policy"
-  resource_group_name = azurerm_resource_group.rg.name
-  iothub_name         = azurerm_iothub.iothub.name
+  resource_group_name = azurerm_resource_group.data_rg.name
+  iothub_name         = azurerm_iothub.vwh_iothub.name
 
   registry_read   = true # List devices
   registry_write  = true # Create devices
