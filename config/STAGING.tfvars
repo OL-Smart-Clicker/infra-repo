@@ -9,7 +9,7 @@ cluster_access_ips = [
   # Must add Runner IP ranges
   # -------------------------
   # Self-hosted Runner IPs:
-  "145.93.117.114/32",
+  "145.93.117.99/32",
   # -------------------------
   # Azure DevOps Runner IPs:
   # "20.37.158.0/23",
