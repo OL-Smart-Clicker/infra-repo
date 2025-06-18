@@ -2,7 +2,13 @@
 
 ## 1. Overview
 
-This document details the Kubernetes implementation and deployment model for the project, focusing on GitOps, application delivery, cluster add-ons, and operational strategies such as cost optimization. It highlights the use of ArgoCD, Helm, and Terraform for managing both infrastructure and workloads, as well as the structure and purpose of the custom Helm charts for frontend and backend services.
+This document details the Kubernetes implementation and deployment model for the Smart Clicker project, focusing on GitOps, application delivery, cluster add-ons, and operational strategies such as cost optimization. It highlights the use of ArgoCD, Helm, and Terraform for managing both infrastructure and workloads, including the comprehensive tagging strategy and security model implemented across all resources.
+
+The infrastructure leverages modern Kubernetes practices including:
+- **Cilium** for advanced networking and security policies
+- **Azure Workload Identity** for secure pod-to-Azure resource access
+- **Spot instances** for cost optimization
+- **GitOps** with ArgoCD for continuous delivery
 
 ---
 
