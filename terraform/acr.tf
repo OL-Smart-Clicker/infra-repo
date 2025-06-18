@@ -5,10 +5,11 @@ resource "azurerm_container_registry" "wvh_acr" {
   admin_enabled       = true # Needed to integrate GitHub Actions with ACR
   # Conditional SKU based on environment
   sku = var.environment == "staging" ? "Basic" : "Standard"
-  tags = {
-    CostPolicy  = var.environment == "staging" ? "FreeTier" : "Production"
-    Environment = var.environment
-  }
+  tags = merge(local.standard_tags, {
+    Service  = "Container-Registry"
+    Workload = "Infrastructure"
+    Backup   = "NotRequired"
+  })
 }
 
 resource "azurerm_role_assignment" "aks_acr_pull" {

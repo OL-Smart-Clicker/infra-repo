@@ -29,10 +29,10 @@ resource "azurerm_kubernetes_cluster" "vwh_aks_cluster" {
     node_labels = {
       "nodetype" = "on-demand"
     }
-    tags = {
-      "environment" = "staging"
-      "cluster"     = "${var.cluster_name}-${var.environment}"
-    }
+    tags = merge(local.aks_tags, {
+      NodeType = "on-demand"
+      Purpose  = "system-workloads"
+    })
   }
 
   # =================
@@ -136,9 +136,10 @@ resource "azurerm_kubernetes_cluster_node_pool" "spot_pool" {
     ]
   }
 
-  tags = {
-    "environment" = "staging"
-  }
+  tags = merge(local.aks_tags, {
+    NodeType = "spot"
+    Purpose  = "user-workloads"
+  })
 }
 
 resource "azurerm_kubernetes_cluster_node_pool" "non_spot_pool" {
@@ -163,7 +164,8 @@ resource "azurerm_kubernetes_cluster_node_pool" "non_spot_pool" {
     ]
   }
 
-  tags = {
-    "environment" = "staging"
-  }
+  tags = merge(local.aks_tags, {
+    NodeType = "spot"
+    Purpose  = "user-workloads"
+  })
 }

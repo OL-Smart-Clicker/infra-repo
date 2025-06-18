@@ -58,3 +58,36 @@ variable "cosmos_tier" {
     error_message = "Must be 'Free' or 'Standard'."
   }
 }
+
+# Common tags for all resources
+variable "common_tags" {
+  description = "Common tags to be applied to all resources"
+  type        = map(string)
+  default = {
+    Project     = "Smart-Clicker"
+    Owner       = "OL-Team"
+    ManagedBy   = "Terraform"
+    Repository  = "infra-repo"
+    CreatedDate = "2025-06-18"
+  }
+}
+
+variable "additional_tags" {
+  description = "Additional tags to merge with common tags"
+  type        = map(string)
+  default     = {}
+}
+
+locals {
+  # Merge common tags with environment-specific and additional tags
+  standard_tags = merge(
+    var.common_tags,
+    {
+      Environment  = var.environment
+      CostCenter   = var.environment == "staging" ? "Development" : "Production"
+      CostPolicy   = var.environment == "staging" ? "FreeTier" : "Production"
+      LastModified = formatdate("YYYY-MM-DD", timestamp())
+    },
+    var.additional_tags
+  )
+}

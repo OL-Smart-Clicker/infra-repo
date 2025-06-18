@@ -32,23 +32,24 @@ resource "azurerm_iothub" "vwh_iothub" {
 
   # Network security configuration
   network_rule_set {
-    default_action                     = "Deny"
+    default_action                     = "Allow" # Allow all IoT Hub devices to connect
     apply_to_builtin_eventhub_endpoint = false
 
-    dynamic "ip_rule" {
-      for_each = var.iot_allowed_ips
-      content {
-        name    = "allow_${ip_rule.key}"
-        ip_mask = ip_rule.value
-        action  = "Allow"
-      }
-    }
+    # dynamic "ip_rule" {
+    #   for_each = var.iot_allowed_ips
+    #   content {
+    #     name    = "allow_${ip_rule.key}"
+    #     ip_mask = ip_rule.value
+    #     action  = "Allow"
+    #   }
+    # }
   }
-
-  tags = {
-    CostCenter  = "Staging"
-    Environment = var.environment
-  }
+  tags = merge(local.standard_tags, {
+    Service   = "IoT-Hub"
+    Workload  = "Data-Ingestion"
+    DataClass = "Sensor-Data"
+    Backup    = "NotRequired"
+  })
 }
 
 # IoT Hub Endpoint for CosmosDB

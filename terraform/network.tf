@@ -36,9 +36,11 @@ resource "azurerm_subnet" "private_subnet" {
 resource "azurerm_private_dns_zone" "private_dns" {
   name                = "privatelink.documents.azure.com"
   resource_group_name = azurerm_resource_group.network_rg.name
-  tags = {
-    Environment = var.environment
-  }
+  tags = merge(local.standard_tags, {
+    Service  = "Private-DNS"
+    Workload = "Infrastructure"
+    Backup   = "NotRequired"
+  })
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "aks_vnet_link" {
@@ -46,9 +48,11 @@ resource "azurerm_private_dns_zone_virtual_network_link" "aks_vnet_link" {
   resource_group_name   = azurerm_resource_group.network_rg.name
   private_dns_zone_name = azurerm_private_dns_zone.private_dns.name
   virtual_network_id    = azurerm_virtual_network.main_vnet.id
-  tags = {
-    Environment = var.environment
-  }
+  tags = merge(local.standard_tags, {
+    Service  = "DNS-Link"
+    Workload = "Infrastructure"
+    Backup   = "NotRequired"
+  })
 }
 
 # Private Endpoint with Cost-Optimized DNS

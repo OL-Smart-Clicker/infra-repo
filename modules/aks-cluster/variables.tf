@@ -72,3 +72,22 @@ variable "lb_sku" {
     error_message = "Invalid value for LB SKU. Valid values are 'basic' and 'standard'"
   }
 }
+
+variable "common_tags" {
+  description = "Common tags to be applied to all AKS resources"
+  type        = map(string)
+  default     = {}
+}
+
+locals {
+  # AKS-specific standard tags
+  aks_tags = merge(
+    var.common_tags,
+    {
+      Environment = var.environment
+      Cluster     = "${var.cluster_name}-${var.environment}"
+      Service     = "Kubernetes"
+      Workload    = "Container-Platform"
+    }
+  )
+}

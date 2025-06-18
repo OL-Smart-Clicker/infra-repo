@@ -73,11 +73,13 @@ resource "azurerm_cosmosdb_account" "vwh_cosmosdb" {
     retention_in_hours  = var.environment == "production" ? "48" : "24"
     storage_redundancy  = var.environment == "production" ? "Zone" : "Local"
   }
-
-  tags = {
-    CostPolicy  = var.environment == "staging" ? "FreeTier" : "Production"
-    Environment = var.environment
-  }
+  tags = merge(local.standard_tags, {
+    Service    = "Database"
+    Workload   = "Data-Storage"
+    DataClass  = "Internal"
+    Backup     = var.environment == "production" ? "Continuous" : "Periodic"
+    Compliance = "GDPR"
+  })
 
 }
 
