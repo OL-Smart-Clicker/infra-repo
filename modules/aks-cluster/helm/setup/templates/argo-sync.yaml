@@ -1,0 +1,108 @@
+apiVersion: secrets-store.csi.x-k8s.io/v1
+kind: SecretProviderClass
+metadata:
+  name: argocd-git-creds
+  namespace: argocd
+spec:
+  provider: azure
+  parameters:
+    usePodIdentity: "false"
+    useVMManagedIdentity: "true"
+    userAssignedIdentityID: {{ .Values.irsa_id }}
+    keyvaultName: {{ .Values.keyvault_name }}
+    tenantId: {{ .Values.tenant_id }}
+    objects: |
+      array:
+        - |
+          objectName: gh-username
+          objectType: secret
+        - |
+          objectName: gh-pat
+          objectType: secret
+  secretObjects:
+    - secretName: github-creds
+      type: Opaque
+      data:
+        - objectName: gh-username
+          key: username
+        - objectName: gh-pat
+          key: password
+
+---
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: allow-secret
+  namespace: argocd
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: allow-secret-role
+  namespace: argocd
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - create
+  - get
+  - list
+  - patch
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: allow-secret-rb
+  namespace: argocd
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: allow-secret-role
+subjects:
+- kind: ServiceAccount
+  name: allow-secret
+  namespace: argocd
+
+---
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: create-argocd-repo-secret
+  namespace: argocd
+spec:
+  template:
+    spec:
+      serviceAccountName: allow-secret
+      containers:
+        - name: create-secret
+          image: bitnami/kubectl:latest
+          command:
+            - /bin/sh
+            - -c
+            - |
+              kubectl create secret generic argocd-git-repo-creds \
+                --namespace=argocd \
+                --from-literal=url=https://github.com/OL-Smart-Clicker/app-repo \
+                --from-literal=username=$(cat /mnt/secrets-store/gh-username) \
+                --from-literal=password=$(cat /mnt/secrets-store/gh-pat)
+              kubectl label secret/argocd-git-repo-creds -n argocd argocd.argoproj.io/secret-type=repository
+          volumeMounts:
+            - name: github-creds
+              mountPath: /mnt/secrets-store
+              readOnly: true
+      restartPolicy: OnFailure
+      volumes:
+        - name: github-creds
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: argocd-git-creds

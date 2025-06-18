@@ -1,0 +1,18 @@
+@startuml Pod Data Workflow
+participant "Backend Pod" as Pod
+participant "Entra ID" as EntraID
+participant "Cosmos DB" as CosmosDB
+
+Pod -> EntraID: POST /tenant/oauth2/v2.0/token
+activate Pod
+EntraID -> EntraID: Validate federated credentials
+EntraID --> Pod: JWT (access_token)
+deactivate Pod
+
+Pod -> CosmosDB: GET /dbs/{db}/colls/{coll}\nAuthorization: Bearer <token>
+activate Pod
+CosmosDB -> EntraID: Validate token signature
+EntraID --> CosmosDB: Validation response
+CosmosDB --> Pod: 200 OK with data
+deactivate Pod
+@enduml

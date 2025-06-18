@@ -1,0 +1,9 @@
+@startuml Backend DNS Resolution
+title Cosmos DB DNS Resolution
+start
+:Pod queries CoreDNS;
+:CoreDNS forwards to Azure DNS (168.63.129.16);
+:Azure DNS returns CNAME to privatelink;
+:Private DNS Zone resolves to private IP;
+stop
+@enduml

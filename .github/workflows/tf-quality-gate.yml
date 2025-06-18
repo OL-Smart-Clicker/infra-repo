@@ -6,16 +6,30 @@ on:
 jobs:
   quality-checks:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write  # Mandatory for branch updates
+      contents: read
+      actions: write
     steps:
     - uses: actions/checkout@v4
+      name: Checkout source code
 
-    # TFLint with Azure-specific rules
     - uses: terraform-linters/setup-tflint@v4
+      name: Setup TFLint
       with:
-        tflint_version: 0.52.0
-        config_file: .tflint.hcl
-    
-    - run: tflint -f compact
+        tflint_version: latest
+    - name: Show version
+      run: tflint --version
+
+    - name: Init TFLint
+      run: tflint --init
+      # -- RATE LIMITING FIX --
+      # env:
+      #   # https://github.com/terraform-linters/tflint/blob/master/docs/user-guide/plugins.md#avoiding-rate-limiting
+      #   GITHUB_TOKEN: ${{ github.token }}
+
+    - name: Run TFLint
+      run: tflint -f compact
     
     # Trivy Security Scan
     - uses: aquasecurity/trivy-action@0.30.0
@@ -23,15 +37,15 @@ jobs:
         scan-type: 'config'
         scan-ref: './'
         severity: 'CRITICAL,HIGH'
-    
+        
     # Branch protection requirement
-    - uses: actions/github-script@v6
-      if: github.event_name == 'pull_request'
-      with:
-        script: |
-          github.rest.pulls.updateBranch({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            pull_number: context.payload.pull_request.number,
-            expected_head_sha: context.sha
-          })
+    # - uses: actions/github-script@v6
+    #   if: github.event_name == 'pull_request'
+    #   with:
+    #     script: |
+    #       github.rest.pulls.updateBranch({
+    #         owner: context.repo.owner,
+    #         repo: context.repo.repo,
+    #         pull_number: context.payload.pull_request.number,
+    #         expected_head_sha: context.sha
+    #       })
