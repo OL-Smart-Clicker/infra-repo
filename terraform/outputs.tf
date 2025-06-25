@@ -33,3 +33,8 @@ output "dps_device_provisioning_host_name" {
   description = "The device endpoint of the IoT Device Provisioning Service needed by devices."
   value       = azurerm_iothub_dps.wvh_iothub_dps.device_provisioning_host_name
 }
+
+output "photo_storage_endpoint" {
+  description = "The endpoint URL for the Azure Storage Account used for photo storage."
+  value       = azurerm_storage_account.wvh_photo_storage.primary_blob_endpoint
+}

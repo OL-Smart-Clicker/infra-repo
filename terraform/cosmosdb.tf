@@ -47,7 +47,7 @@ resource "azurerm_cosmosdb_account" "vwh_cosmosdb" {
   local_authentication_disabled = true
 
   capacity {
-    total_throughput_limit = var.environment == "production" ? -1 : 2000 # Fall within the free tier limit for staging
+    total_throughput_limit = -1 # Enforce limit at database level
   }
 
   # Networking
@@ -87,6 +87,7 @@ resource "azurerm_cosmosdb_sql_database" "wvh_db" {
   name                = "wvh-cosmosdb"
   resource_group_name = azurerm_resource_group.data_rg.name
   account_name        = azurerm_cosmosdb_account.vwh_cosmosdb.name
+  throughput          = 1000
 }
 
 resource "azurerm_cosmosdb_sql_container" "clicker_data_container" {
