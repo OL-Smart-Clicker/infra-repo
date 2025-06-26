@@ -8,7 +8,7 @@ resource "azurerm_storage_account" "wvh_photo_storage" {
   shared_access_key_enabled       = true
 
   # Networking
-  public_network_access_enabled = false
+  public_network_access_enabled = true
   min_tls_version               = "TLS1_2"
   network_rules {
     default_action             = "Deny"
