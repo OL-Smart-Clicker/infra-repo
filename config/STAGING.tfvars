@@ -4,12 +4,13 @@ location    = "West Europe"
 # AKS cluster config
 cluster_name = "vwh-aks-cluster"
 cluster_access_ips = [
-  "81.173.64.21/32",
+  "95.97.24.146/32", # Mario
+  "37.74.12.252/32", # Andrei
   # -------------------------
   # Must add Runner IP ranges
   # -------------------------
   # Self-hosted Runner IPs:
-  "145.93.117.99/32",
+  # "145.93.117.99/32",
   # -------------------------
   # Azure DevOps Runner IPs:
   # "20.37.158.0/23",
