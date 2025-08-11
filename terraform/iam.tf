@@ -1,9 +1,9 @@
-# Allow AKS (backend) to read from CosmosDB
+# Allow AKS (backend) R+W CosmosDB
 resource "azurerm_cosmosdb_sql_role_assignment" "aks_to_cosmosdb_read_role" {
   resource_group_name = azurerm_resource_group.data_rg.name
   account_name        = azurerm_cosmosdb_account.vwh_cosmosdb.name
   # CosmosDB reader (R)
-  role_definition_id = "${azurerm_cosmosdb_account.vwh_cosmosdb.id}/sqlRoleDefinitions/00000000-0000-0000-0000-000000000001"
+  role_definition_id = "${azurerm_cosmosdb_account.vwh_cosmosdb.id}/sqlRoleDefinitions/00000000-0000-0000-0000-000000000002"
   principal_id       = module.aks_cluster.aks_irsa_uuid
   scope              = azurerm_cosmosdb_account.vwh_cosmosdb.id
 }

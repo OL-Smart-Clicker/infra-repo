@@ -53,7 +53,18 @@ resource "helm_release" "argocd_apps" {
   chart      = "argocd-apps"
   version    = "2.0.2"
 
-  values = [
+  values = var.environment == "prod" ? [
+    file("${path.module}/helm/argo/argocd-apps.yaml"),
+    yamlencode({
+      applications = {
+        "software.app-of-apps" = {
+          source = {
+            targetRevision = "main"
+          }
+        }
+      }
+    })
+    ] : [
     file("${path.module}/helm/argo/argocd-apps.yaml")
   ]
 

@@ -3,8 +3,8 @@ variable "environment" {
   type        = string
   default     = "staging"
   validation {
-    condition     = var.environment == "staging" || var.environment == "production"
-    error_message = "Invalid value for environment. Allowed values are staging, production"
+    condition     = var.environment == "staging" || var.environment == "prod"
+    error_message = "Invalid value for environment. Allowed values are staging, prod"
   }
 }
 

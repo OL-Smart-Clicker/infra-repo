@@ -12,6 +12,9 @@ resource "azurerm_container_registry" "wvh_acr" {
   })
 }
 
+# To retrieve the ACR password for use in CI/CD pipelines, run the following command:
+# wsl az acr credential show -n wvhacr<environment> --query "passwords[0].value" -o tsv
+
 resource "azurerm_role_assignment" "aks_acr_pull" {
   principal_id                     = module.aks_cluster.cluster_identity
   role_definition_name             = "AcrPull"

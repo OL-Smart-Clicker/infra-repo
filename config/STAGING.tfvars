@@ -1,10 +1,12 @@
-environment = "staging"
-location    = "West Europe"
+environment     = "staging"
+location        = "West Europe"
+subscription_id = "c2de087f-ee03-4605-96bc-44a2338c298f"
+tenant_id       = "3cb226f3-72b0-447d-b57d-31f479808bad"
 
 # AKS cluster config
-cluster_name = "vwh-aks-cluster"
+cluster_name = "wvh-aks-cluster"
 cluster_access_ips = [
-  "95.97.24.146/32", # Mario
+  "81.173.64.21/32", # Mario
   "37.74.12.252/32", # Andrei
   # -------------------------
   # Must add Runner IP ranges
