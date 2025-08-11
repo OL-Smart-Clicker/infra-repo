@@ -142,7 +142,7 @@ resource "azurerm_cosmosdb_sql_container" "roles_container" {
   account_name          = azurerm_cosmosdb_account.vwh_cosmosdb.name
   database_name         = azurerm_cosmosdb_sql_database.wvh_db.name
   partition_key_paths   = ["/tenantId"]
-  partition_key_version = 1
+  partition_key_version = 2
 }
 
 resource "azurerm_cosmosdb_sql_container" "users_roles_container" {

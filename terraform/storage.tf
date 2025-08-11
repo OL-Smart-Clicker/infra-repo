@@ -1,5 +1,5 @@
 resource "azurerm_storage_account" "wvh_photo_storage" {
-  name                            = "wvhphotostorage"
+  name                            = "wvhphoto${var.environment}"
   resource_group_name             = azurerm_resource_group.data_rg.name
   location                        = var.location
   account_tier                    = "Standard"
