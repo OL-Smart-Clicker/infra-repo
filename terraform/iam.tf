@@ -1,4 +1,4 @@
-# Allow AKS (backend) R+W CosmosDB
+# Allow AKS (backend) R CosmosDB
 resource "azurerm_cosmosdb_sql_role_assignment" "aks_to_cosmosdb_read_role" {
   resource_group_name = azurerm_resource_group.data_rg.name
   account_name        = azurerm_cosmosdb_account.vwh_cosmosdb.name
