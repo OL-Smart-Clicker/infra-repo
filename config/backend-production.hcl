@@ -3,3 +3,5 @@ resource_group_name  = "tfstate-rg"
 storage_account_name = "wvhtfstatesaprod"
 container_name       = "tfstate-production"
 key                  = "production/terraform.tfstate"
+use_cli              = false
+use_azuread_auth     = true

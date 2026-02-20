@@ -8,6 +8,7 @@ trigger:
       - terraform/*
       - config/*
       - modules/*
+      - pipeline/*
 
 pr: none # Do not run on PR
 
@@ -45,6 +46,7 @@ stages:
         command: init
         commandOptions: '-backend-config=$(BACKEND_CONFIG_FILE) -input=false'
         workingDirectory: 'terraform'
+        backendServiceArm: 'tf-pipeline-sc-production'
         environmentServiceName: 'tf-pipeline-sc-production'
 
     # Generate Terraform plan
@@ -86,6 +88,7 @@ stages:
         command: init
         commandOptions: '-backend-config=$(BACKEND_CONFIG_FILE) -input=false'
         workingDirectory: 'terraform'
+        backendServiceArm: 'tf-pipeline-sc-production'
         environmentServiceName: 'tf-pipeline-sc-production'
     - task: TerraformCLI@1
       inputs:
