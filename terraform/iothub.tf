@@ -23,8 +23,6 @@ resource "azurerm_iothub" "vwh_iothub" {
     type = "SystemAssigned"
   }
 
-  # enrichment -- optional, data transformation
-
   public_network_access_enabled = true
 
   # Must be set for free tier (MAX 2 partitions)
@@ -34,16 +32,8 @@ resource "azurerm_iothub" "vwh_iothub" {
   network_rule_set {
     default_action                     = "Allow" # Allow all IoT Hub devices to connect
     apply_to_builtin_eventhub_endpoint = false
-
-    # dynamic "ip_rule" {
-    #   for_each = var.iot_allowed_ips
-    #   content {
-    #     name    = "allow_${ip_rule.key}"
-    #     ip_mask = ip_rule.value
-    #     action  = "Allow"
-    #   }
-    # }
   }
+
   tags = merge(local.standard_tags, {
     Service   = "IoT-Hub"
     Workload  = "Data-Ingestion"
@@ -63,6 +53,15 @@ resource "azurerm_iothub_endpoint_cosmosdb_account" "iothub_cosmosdb_endpoint" {
   partition_key_template = "{deviceid}-{YYYY}-{MM}-{DD}"
   endpoint_uri           = azurerm_cosmosdb_account.vwh_cosmosdb.endpoint
   authentication_type    = "identityBased"
+}
+
+# Data enrichment for IoT Hub CosmosDB endpoint
+resource "azurerm_iothub_enrichment" "iothub_cosmosdb_enrichment" {
+  resource_group_name = azurerm_resource_group.data_rg.name
+  iothub_name         = azurerm_iothub.vwh_iothub.name
+  key                 = "officeSpaceId"
+  value               = "$twin.tags.officeId"
+  endpoint_names      = [azurerm_iothub_endpoint_cosmosdb_account.iothub_cosmosdb_endpoint.name]
 }
 
 # Route for IoT Hub to CosmosDB

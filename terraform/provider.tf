@@ -10,8 +10,10 @@ terraform {
 provider "azurerm" {
   features {}
 
-  # OIDC authentication with Azure DevOps service connection
-  use_oidc        = true
-  subscription_id = "c2de087f-ee03-4605-96bc-44a2338c298f"
-  tenant_id       = "3cb226f3-72b0-447d-b57d-31f479808bad"
+  # client_secret should be set via environment variable ARM_CLIENT_SECRET for security
+  subscription_id = var.subscription_id
+  tenant_id       = var.tenant_id
+  use_oidc        = var.environment == "production" ? false : true
+  client_id       = var.environment == "production" ? "8f245a8e-4ba3-47cb-b268-58cb6c5ec9d6" : null
+
 }

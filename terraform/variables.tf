@@ -1,9 +1,27 @@
-variable "environment" {
-  description = "Deployment environment (staging/production)"
+variable "subscription_id" {
+  description = "Azure Subscription ID"
   type        = string
   validation {
-    condition     = contains(["staging", "production"], lower(var.environment))
-    error_message = "Environment must be 'staging' or 'production'."
+    condition     = can(regex("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", var.subscription_id))
+    error_message = "Invalid Subscription ID format."
+  }
+}
+
+variable "tenant_id" {
+  description = "Azure Tenant ID"
+  type        = string
+  validation {
+    condition     = can(regex("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", var.tenant_id))
+    error_message = "Invalid Tenant ID format."
+  }
+}
+
+variable "environment" {
+  description = "Deployment environment (staging/prod)"
+  type        = string
+  validation {
+    condition     = contains(["staging", "prod"], lower(var.environment))
+    error_message = "Environment must be 'staging' or 'prod'."
   }
 }
 
@@ -39,13 +57,6 @@ variable "cluster_lb_sku" {
   description = "The SKU of the AKS cluster LB. Valid values are 'basic' and 'standard'"
   type        = string
   default     = "standard"
-}
-
-# IoT Hub
-variable "iot_allowed_ips" {
-  description = "Allowed IP ranges for IoT Hub"
-  type        = list(string)
-  default     = []
 }
 
 # CosmosDB

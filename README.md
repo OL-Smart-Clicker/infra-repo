@@ -138,7 +138,6 @@ See [modules/aks-cluster/README.md](modules/aks-cluster/README.md) for detailed 
 | cluster_admins      | list(string) | Azure AD group IDs for cluster admin access       | []           |
 | cluster_access_ips  | list(string) | IP CIDRs allowed to access AKS API               | []           |
 | cluster_lb_sku      | string       | AKS Load Balancer SKU                            | standard     |
-| iot_allowed_ips     | list(string) | Allowed IPs for IoT Hub                          | []           |
 | cosmos_tier         | string       | Cosmos DB pricing tier (Free/Standard)           | Free         |
 | common_tags         | map(string)  | Common tags applied to all resources             | See defaults |
 | additional_tags     | map(string)  | Additional tags to merge with common tags        | {}           |

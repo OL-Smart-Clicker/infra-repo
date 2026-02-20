@@ -6,6 +6,10 @@ resource "null_resource" "aks_auth" {
 
 provider "helm" {
   kubernetes {
-    config_path = "~/.kube/config"
+    config_path = pathexpand("~/.kube/config")
   }
+}
+
+provider "kubernetes" {
+  config_path = pathexpand("~/.kube/config")
 }

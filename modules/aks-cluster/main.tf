@@ -1,5 +1,5 @@
 resource "azurerm_resource_group" "cluster_rg" {
-  name     = "${var.cluster_name}-rg"
+  name     = "${var.cluster_name}-${var.environment}-rg"
   location = var.location
 }
 
@@ -81,7 +81,7 @@ resource "azurerm_kubernetes_cluster" "vwh_aks_cluster" {
     service_cidr        = "10.0.0.0/16"
     dns_service_ip      = "10.0.0.10"
     ip_versions         = ["IPv4"]
-    /* Not needed for Staging - expenisve
+    /* Not needed currently - expensive
     outbound_type       = "managedNATGateway"
     nat_gateway_profile {
       idle_timeout_in_minutes   = 4
@@ -106,8 +106,8 @@ resource "azurerm_kubernetes_cluster" "vwh_aks_cluster" {
   }
 
   tags = {
-    "environment" = "staging"
-    "cluster"     = "wvh-aks-cluster"
+    "environment" = "${var.environment}"
+    "cluster"     = "${var.cluster_name}-${var.environment}"
   }
 }
 
@@ -132,7 +132,8 @@ resource "azurerm_kubernetes_cluster_node_pool" "spot_pool" {
   lifecycle { # Azure will change these automatically
     ignore_changes = [
       node_labels,
-      node_taints
+      node_taints,
+      tags
     ]
   }
 
@@ -160,7 +161,8 @@ resource "azurerm_kubernetes_cluster_node_pool" "non_spot_pool" {
   lifecycle { # Azure will change these automatically
     ignore_changes = [
       node_labels,
-      node_taints
+      node_taints,
+      tags
     ]
   }
 

@@ -1,8 +1,6 @@
 terraform {
   backend "azurerm" {
-    resource_group_name  = "tfstate-rg"
-    storage_account_name = "wvhtfstatesa"
-    container_name       = "staging"
-    key                  = "terraform.tfstate"
+    # Backend configuration will be provided during initialization
+    # Use -backend-config parameter or backend config files
   }
 }
