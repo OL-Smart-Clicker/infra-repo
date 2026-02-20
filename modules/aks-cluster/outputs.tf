@@ -13,3 +13,7 @@ output "cluster_identity" {
 output "cluster_rg" {
   value = azurerm_resource_group.cluster_rg.name
 }
+
+output "ingress_lb_public_ip" {
+  value = try(data.kubernetes_service.nginx_ingress_controller.status[0].load_balancer[0].ingress[0].ip, null)
+}

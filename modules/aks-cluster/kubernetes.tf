@@ -70,3 +70,12 @@ resource "helm_release" "argocd_apps" {
 
   depends_on = [helm_release.argocd]
 }
+
+data "kubernetes_service" "nginx_ingress_controller" {
+  metadata {
+    name      = "nginx-ingress-ingress-nginx-controller"
+    namespace = "frontend"
+  }
+
+  depends_on = [helm_release.nginx_ingress]
+}

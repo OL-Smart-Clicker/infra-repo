@@ -38,3 +38,8 @@ output "photo_storage_endpoint" {
   description = "The endpoint URL for the Azure Storage Account used for photo storage."
   value       = azurerm_storage_account.wvh_photo_storage.primary_blob_endpoint
 }
+
+output "cluster_ingress_lb_public_ip" {
+  description = "Public IP address of the AKS ingress-nginx LoadBalancer service."
+  value       = module.aks_cluster.ingress_lb_public_ip
+}

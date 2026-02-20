@@ -9,9 +9,7 @@ cluster_name = "wvh-aks-cluster"
 
 # Security - Add your specific IP addresses and admin groups
 cluster_access_ips = [
-  # Add your office/admin IP addresses here
-  # "YOUR.OFFICE.IP.ADDRESS/32",
-  "86.120.249.85/32", # Mario
+  "0.0.0.0/0" # Rely on RBAC only
 ]
 
 cluster_admins = [
@@ -25,8 +23,8 @@ cosmos_tier    = "Standard"
 
 # Custom tags for this client environment
 additional_tags = {
-  Client      = "New-Client"
+  Client      = "Workplace-Vitality-Hub"
   Environment = "production"
-  CostCenter  = "Client-Production"
-  Contact     = "client-admin@company.com"
+  CostCenter  = "NA"
+  Contact     = "mario.constantin@student.fontys.nl"
 }
