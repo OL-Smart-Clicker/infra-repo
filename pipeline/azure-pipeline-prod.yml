@@ -25,6 +25,8 @@ resources:
 variables:
   - name: ENVIRONMENT
     value: PRODUCTION
+  - name: BACKEND_CONFIG_FILE
+    value: ../config/backend-production.hcl
 
 stages:
 - stage: Plan
@@ -41,6 +43,7 @@ stages:
     - task: TerraformCLI@1
       inputs:
         command: init
+        commandOptions: '-backend-config=$(BACKEND_CONFIG_FILE) -input=false'
         workingDirectory: 'terraform'
         environmentServiceName: 'tf-pipeline-sc-production'
 
@@ -81,6 +84,7 @@ stages:
     - task: TerraformCLI@1
       inputs:
         command: init
+        commandOptions: '-backend-config=$(BACKEND_CONFIG_FILE) -input=false'
         workingDirectory: 'terraform'
         environmentServiceName: 'tf-pipeline-sc-production'
     - task: TerraformCLI@1
